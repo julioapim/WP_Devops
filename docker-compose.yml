@@ -1,0 +1,48 @@
+version: '3.7'
+services:
+nginx:
+    image: nginx:$NGINX_VERSION
+    container_name: nginx
+    ports:
+        - '80:80'
+        - '443:443'
+    volumes:
+        - ./nginx:/etc/nginx/conf.d
+        - ./logs/nginx:/var/log/nginx
+        - ./wordpress:/var/www/html
+        - ./certs:/etc/letsencrypt
+        - ./certs-data:/data/letsencrypt
+    links:
+        - wordpress
+    restart: always
+mysql:
+  image: mariadb:$MARIADB_VERSION
+    container_name: mysql
+    ports:
+        - '3306:3306'
+    volumes:
+        - ./db-data:/var/lib/mysql
+    env_file: .env
+    environment:
+        - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+        - MYSQL_USER=$MYSQL_USER
+        - MYSQL_PASSWORD=$MYSQL_PASSWORD
+        - MYSQL_DATABASE=$MYSQL_DATABASE
+    restart: always
+wordpress:
+    image: wordpress:$WORDPRESS_VERSION
+    container_name: wordpress
+    ports:
+        - '9000:9000'
+    volumes:
+        - ./wordpress:/var/www/html
+    env_file: .env
+    environment:
+        - WORDPRESS_DB_NAME=$WORDPRESS_DB_NAME
+        - WORDPRESS_TABLE_PREFIX=$WORDPRESS_TABLE_PREFIX
+        - WORDPRESS_DB_HOST=$WORDPRESS_DB_HOST
+        - WORDPRESS_DB_USER=$WORDPRESS_DB_USER
+        - WORDPRESS_DB_PASSWORD=$WORDPRESS_DB_PASSWORD
+    links:
+        - mysql
+    restart: always
