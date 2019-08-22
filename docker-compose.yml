@@ -2,45 +2,18 @@ version: "3.7"
 
 services:
 
-  nginx:
-    image: nginx:latest
-    ports:
-        - 80:80
-        - 443:443
-    volumes:
-        - ./nginx:/etc/nginx/conf.d
-        - ./logs/nginx:/var/log/nginx
-        - ./wordpress:/var/www/html
-        - ./certs:/etc/letsencrypt
-        - ./certs-data:/data/letsencrypt
-    links:
-        - wordpress
-    networks:
-      - webnet
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 2
-        delay: 10s
-      resources:
-        limits:
-          cpus: "0.1"
-          memory: 50M
-      restart_policy:
-        condition: on-failure
-
   mysql:
     image: mariadb:latest
     env_file: .env
     environment: 
-      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
-      - MYSQL_USER=$MYSQL_USER
-      - MYSQL_PASSWORD=$MYSQL_PASSWORD
-      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_ROOT_PASSWORD=aqwe123
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=aqwe123
+      - MYSQL_DATABASE=wpdb
     ports: 
       - 3306:3306
     volumes: 
-      - ./db-data:/var/lib/mysql
+      - $PWD/db-data:/var/lib/mysql
     networks:
       - webnet
     deploy: 
@@ -49,6 +22,8 @@ services:
           cpus: "0.1"
           memory: 50M
       replicas: 1
+      placement:
+        constraints: [node.id == pmv59qgezia7sgh62de1m10i7]
       update_config:
         parallelism: 2
         delay: 10s
@@ -60,20 +35,51 @@ services:
     ports:
         - 9000:9000
     volumes:
-        - ./wordpress:/var/www/html
+        - $PWD/wordpress:/var/www/html
     env_file: .env
     environment:
-        - WORDPRESS_DB_NAME=$WORDPRESS_DB_NAME
-        - WORDPRESS_TABLE_PREFIX=$WORDPRESS_TABLE_PREFIX
-        - WORDPRESS_DB_HOST=$WORDPRESS_DB_HOST
-        - WORDPRESS_DB_USER=$WORDPRESS_DB_USER
-        - WORDPRESS_DB_PASSWORD=$WORDPRESS_DB_PASSWORD
+        - WORDPRESS_DB_NAME=wp_db
+        - WORDPRESS_TABLE_PREFIX=wp_
+        - WORDPRESS_DB_HOST=mysql
+        - WORDPRESS_DB_USER=root
+        - WORDPRESS_DB_PASSWORD=aqwe123
     links:
         - mysql
     networks:
       - webnet
     deploy:
       replicas: 1
+      placement:
+        constraints: [node.id == pmv59qgezia7sgh62de1m10i7]
+      update_config:
+        parallelism: 2
+        delay: 60s
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+
+  nginx:
+    image: nginx:latest
+    ports:
+        - 80:80
+        - 443:443
+    volumes:
+        - $PWD/nginx:/etc/nginx/conf.d
+        - $PWD/logs/nginx:/var/log/nginx
+        - $PWD/wordpress:/var/www/html
+        - $PWD/certs:/etc/letsencrypt
+        - $PWD/certs-data:/data/letsencrypt
+    links:
+        - wordpress
+    networks:
+      - webnet
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.id == pmv59qgezia7sgh62de1m10i7]
       update_config:
         parallelism: 2
         delay: 10s
@@ -83,6 +89,6 @@ services:
           memory: 50M
       restart_policy:
         condition: on-failure
-    
+      
 networks:
   webnet:
