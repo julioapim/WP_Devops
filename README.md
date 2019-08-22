@@ -8,4 +8,4 @@ From the top level of the cloned repository, create the directories that will be
 mkdir -p certs/ certs-data/ nginx/ logs/nginx/ db-data/ wordpress/
 
 
-docker stack deploy -c docker-compose.yml stack-wp-acqio
+docker stack deploy -c docker-compose.yml stack-wp
