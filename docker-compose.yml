@@ -4,7 +4,6 @@ services:
 
   mysql:
     image: mysql:5.7
-    env_file: .env
     environment:
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: aqwe123
@@ -34,7 +33,6 @@ services:
         - 9000:9000
     volumes:
         - $PWD/wordpress:/var/www/html
-    env_file: .env
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: wp_db
