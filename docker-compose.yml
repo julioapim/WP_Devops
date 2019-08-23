@@ -5,6 +5,7 @@ services:
   mysql:
     image: mysql:5.7
     environment:
+      MYSQL_ROOT_PASSWORD: aqwe123
       MYSQL_USER: wordpress
       MYSQL_PASSWORD: aqwe123
       MYSQL_DATABASE: wpdb
@@ -57,8 +58,8 @@ services:
   nginx:
     image: nginx:latest
     ports:
-        - 80:80
-        - 443:443
+        - 980:80
+        - 9443:443
     volumes:
         - $PWD/nginx:/etc/nginx/conf.d
         - $PWD/logs/nginx:/var/log/nginx
