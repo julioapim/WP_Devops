@@ -52,8 +52,8 @@ services:
   nginx:
     image: nginx:latest
     ports:
-      - 980:80
-      - 9443:443
+      - 80:80
+      - 443:443
     volumes:
       - $PWD/nginx:/etc/nginx/conf.d
       - $PWD/logs/nginx:/var/log/nginx
